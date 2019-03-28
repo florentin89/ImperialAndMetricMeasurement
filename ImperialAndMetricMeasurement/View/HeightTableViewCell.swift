@@ -31,13 +31,23 @@ class HeightTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configVehicleHeightCell(){
-        
+    func configVehicleHeightCell(_ value : Float){
+        heightSlider.value = value
         heightLabelTitle.text = "Height"
+        
+        
+        let meters  = Int((value) / 100)
+        let centimeters  = Int(value.truncatingRemainder(dividingBy: 100))
+        let inches = Int(value) < 3 ? 0 : round((value) / 2.54)
+        let feet = Int(round(inches / 12))
+        let inch = Int(round(inches.truncatingRemainder(dividingBy: 12)))
+        
+        heightFeetsLabel.text = "\(feet) ft" + " \(inch)\""
+        heightMetersLabel.text = "\((meters)) m" + " \((centimeters)) cm"
     }
     
     @IBAction func heightValueChanged(_ sender: UISlider) {
         
-        delegate?.heightSliderValueChanged(heightSlider, heightFeetsLabel, heightMetersLabel)
+        configVehicleHeightCell((sender.value))
     }
 }

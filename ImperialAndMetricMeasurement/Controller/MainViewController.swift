@@ -10,6 +10,10 @@ import UIKit
 
 class MainViewController: UIViewController {
 
+    var sliderValue : Float  = 0.0
+    
+    @IBOutlet var tableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -23,7 +27,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "heightCell", for: indexPath) as! HeightTableViewCell
-        cell.configVehicleHeightCell()
+        cell.configVehicleHeightCell(sliderValue)
         cell.delegate = self
   
         return cell
@@ -61,6 +65,9 @@ extension MainViewController: HeightPopUpDelegate {
     func receiveHeightMetric(centimeters: Int?) {
         print("\n\nMetric Data received")
         print("Centimeters: \(centimeters ?? 0)")
+        
+        sliderValue = Float(centimeters ?? 0)
+        tableView.reloadData()
     }
     
     func receiveHeightImperial(feet: Int?, inches: Int?) {
@@ -68,6 +75,22 @@ extension MainViewController: HeightPopUpDelegate {
         print("\n\nImperial Data received")
         print("Feet: \(feet ?? 0)")
         print("Inches: \(inches ?? 0)")
+        
+        let feet = Measurement(value: Double(feet ?? 0), unit: UnitLength.feet)
+        let inches = Measurement(value: Double(inches ?? 0), unit: UnitLength.inches)
+        
+        let feetToCm = feet.converted(to: UnitLength.centimeters)
+        let inchesToCm = inches.converted(to: UnitLength.centimeters)
+        
+        print("\nFeet to cm: \(feetToCm)")
+        print("Inches to cm: \(inchesToCm)")
+        
+        let sumOfCm = feetToCm + inchesToCm
+        print("Sum: \(sumOfCm)")
+        
+        sliderValue = Float(sumOfCm.value)
+
+        tableView.reloadData()
     }
     
     // Receive the data from PopUpViewController
@@ -77,5 +100,16 @@ extension MainViewController: HeightPopUpDelegate {
             let vc: PopUpViewController = segue.destination as! PopUpViewController
             vc.delegate = self
         }
+    }
+}
+
+extension UIAlertController {
+    
+    func presentInOwnWindow(animated: Bool, completion: (() -> Void)?) {
+        let alertWindow = UIWindow(frame: UIScreen.main.bounds)
+        alertWindow.rootViewController = UIViewController()
+        alertWindow.windowLevel = UIWindow.Level.alert + 1;
+        alertWindow.makeKeyAndVisible()
+        alertWindow.rootViewController?.present(self, animated: animated, completion: completion)
     }
 }

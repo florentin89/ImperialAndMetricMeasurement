@@ -48,12 +48,12 @@ class PopUpViewController: UIViewController {
     // Check if the textfields contains Metric or Imperial height. If everything is OK then send the data back.
     func checkImperialOrMetricTextfields(){
         
-        if ((!(centimetersTextField.text?.isEmpty)!) && (!(feetTextField.text?.isEmpty)! || !(inchesTextField.text?.isEmpty)!)) {
+        if notEmpty(centimetersTextField) && (notEmpty(feetTextField) || notEmpty(inchesTextField)) {
             
             showAlertWithTitle(title: "Error", message: "Enter either metric OR imperial height.")
             clearTextFields()
         }
-        if ((centimetersTextField.text?.isEmpty)! && (feetTextField.text?.isEmpty)! && (inchesTextField.text?.isEmpty)!) {
+        if isEmpty(centimetersTextField) && isEmpty(feetTextField) && isEmpty(inchesTextField) {
             
             showAlertWithTitle(title: "Error", message: "Enter either metric OR imperial height.")
             clearTextFields()
@@ -61,6 +61,16 @@ class PopUpViewController: UIViewController {
         else{
             sendDataBack()
         }
+    }
+    
+    // Check if the textfield is not empty
+    fileprivate func notEmpty(_ field: UITextField) -> Bool {
+        return !(field.text?.isEmpty)!
+    }
+    
+    // Check if the textfield is empty
+    fileprivate func isEmpty(_ field: UITextField) -> Bool {
+        return (field.text?.isEmpty)!
     }
     
     // Clear textfields
